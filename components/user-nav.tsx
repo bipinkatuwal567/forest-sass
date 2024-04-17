@@ -25,7 +25,7 @@ export default function UserNav({ user }: UserNavProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={user?.picture} />
+          <AvatarImage src={user?.picture || undefined} />
           <AvatarFallback>{user?.given_name}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
