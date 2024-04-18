@@ -11,7 +11,6 @@ import UserNav from "./user-nav";
 const Navbar = async () => {
   const { isAuthenticated, getUser } = getKindeServerSession();
   const user = await getUser();
-  
 
   return (
     <nav className=" w-full flex items-center h-[10vh] bg-background border-b">

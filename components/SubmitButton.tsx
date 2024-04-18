@@ -7,7 +7,18 @@ import { Loader2 } from "lucide-react";
 const SubmitButton = () => {
   const { pending } = useFormStatus();
   return (
-    <>{pending ? <Button className="w-fit" disabled={pending}> <Loader2 className="animate-spin  mr-2 w-4 h-4" /> Please wait</Button> : <Button type="submit" className="w-fit">Save Now</Button>}</>
+    <>
+      {pending ? (
+        <Button className="w-fit" disabled={pending}>
+          {" "}
+          <Loader2 className="animate-spin  mr-2 w-4 h-4" /> Please wait
+        </Button>
+      ) : (
+        <Button type="submit" className="w-fit">
+          Save Now
+        </Button>
+      )}
+    </>
   );
 };
 
