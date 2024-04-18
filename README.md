@@ -2,7 +2,7 @@
 
 Forest Sass is a simple todo list web application built with Next.js. It allows users to manage their tasks in a visually appealing interface. The project integrates authentication using Kinde, and includes dark mode and light mode features. Users can also customize their display name and color preferences for the entire website, which are linked with Supabase.
 
-![Forest Sass Preview](preview.png)
+![Forest Sass Preview](/profile/preview.png)
 
 ## Features
 
