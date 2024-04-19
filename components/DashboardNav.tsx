@@ -9,7 +9,7 @@ import React from "react";
 export const navItems = [
   { label: "Home", href: "/dashboard", icon: Home },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
-  { label: "Booking", href: "/dashboard/booking", icon: CreditCard },
+  { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
 ];
 
 const DashboardNav = () => {
