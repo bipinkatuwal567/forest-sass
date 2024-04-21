@@ -3,7 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
   const body = await req.text();
 
   const signature = headers().get("Stripe-Signature") as string;
@@ -49,6 +49,7 @@ export async function GET(req: Request) {
         planId: subscription.items.data[0].plan.id,
         interval: String(subscription.items.data[0].plan.interval),
       },
+      
     });
   }
 
