@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { File } from "lucide-react";
+import { Edit, File, Trash } from "lucide-react";
 import Link from "next/link";
 
 export async function getNotes(userId: string) {
   const data = await prisma.note.findMany({
-    where: { id: userId },
+    where: { userId: userId },
     orderBy: {
       createdAt: "desc",
     },
@@ -18,8 +19,10 @@ export async function getNotes(userId: string) {
 export default async function Dashboard() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
+  console.log(user?.id);
 
   const data = await getNotes(user?.id as string);
+  // console.log(data);
 
   return (
     <div className="grid items-start gap-y-8">
@@ -36,7 +39,32 @@ export default async function Dashboard() {
       </div>
 
       {data.length > 0 ? (
-        <div>Hello</div>
+        <div className="flex flex-col gap-y-4">
+          {data.map((item, index) => (
+            <Card key={index} className="flex items-center justify-between p-4">
+              <div>
+              <h2 className="text-xl font-semibold text-primary">{item.title}</h2>
+              <p>{new Intl.DateTimeFormat("en-US", {
+                dateStyle: "full"
+              }).format(item.createdAt)}</p>
+              </div>
+
+              <div className="flex gap-x-4">
+                <Button variant={"outline"} size={"icon"} asChild>
+                  <Link href={`/dashboard/new/${item.id}`}>
+                    <Edit className="w-4 h-4" />
+                  </Link>
+                </Button>
+
+                <form>
+                  <Button variant={"destructive"} size={"icon"}>
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </form>
+              </div>
+            </Card>
+          ))}
+        </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[400px] rounded-md border border-dashed text-center animate-in fade-in-50">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
