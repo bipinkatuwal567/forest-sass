@@ -1,8 +1,11 @@
+import { DeleteBtn } from "@/components/SubmitButton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Edit, File, Trash } from "lucide-react";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
 export async function getNotes(userId: string) {
@@ -22,7 +25,18 @@ export default async function Dashboard() {
   console.log(user?.id);
 
   const data = await getNotes(user?.id as string);
-  // console.log(data);
+
+  async function deleteData(formData: FormData) {
+    'use server'
+    const id = formData.get("id") as string;
+    await prisma.note.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath("/dashboard");
+  }
 
   return (
     <div className="grid items-start gap-y-8">
@@ -43,10 +57,14 @@ export default async function Dashboard() {
           {data.map((item, index) => (
             <Card key={index} className="flex items-center justify-between p-4">
               <div>
-              <h2 className="text-xl font-semibold text-primary">{item.title}</h2>
-              <p>{new Intl.DateTimeFormat("en-US", {
-                dateStyle: "full"
-              }).format(item.createdAt)}</p>
+                <h2 className="text-xl font-semibold text-primary">
+                  {item.title}
+                </h2>
+                <p>
+                  {new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "full",
+                  }).format(item.createdAt)}
+                </p>
               </div>
 
               <div className="flex gap-x-4">
@@ -56,10 +74,9 @@ export default async function Dashboard() {
                   </Link>
                 </Button>
 
-                <form>
-                  <Button variant={"destructive"} size={"icon"}>
-                    <Trash className="w-4 h-4" />
-                  </Button>
+                <form action={deleteData}>
+                  <Input type="hidden" name="id" value={item.id} />
+                  <DeleteBtn />
                 </form>
               </div>
             </Card>
