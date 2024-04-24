@@ -8,7 +8,7 @@ import { Edit, File } from "lucide-react";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 
-export async function getNotes(userId: string) {
+async function getNotes(userId: string) {
   noStore();
   const data = await prisma.user.findUnique({
     where: {
