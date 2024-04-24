@@ -13,11 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 async function getNote({ noteId, userId }: { noteId: string; userId: string }) {
+  noStore();
   const data = await prisma.note.findUnique({
     where: {
       id: noteId,
@@ -38,10 +39,10 @@ export default async function IdPage({ params }: { params: { id: string } }) {
   const user = await getUser();
   const note = await getNote({ noteId: params.id, userId: user?.id as string });
 
-  if(!user) throw new Error("User not found!");
+  if (!user) throw new Error("User not found!");
 
-  async function postData(formData: FormData){
-    'use server';
+  async function postData(formData: FormData) {
+    "use server";
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     await prisma.note.update({
@@ -52,8 +53,8 @@ export default async function IdPage({ params }: { params: { id: string } }) {
       data: {
         title,
         description,
-      }
-    })
+      },
+    });
 
     revalidatePath("/dashboard");
     return redirect("/dashboard");

@@ -4,15 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Edit, File, Trash } from "lucide-react";
-import { revalidatePath } from "next/cache";
+import { Edit, File } from "lucide-react";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 
 export async function getNotes(userId: string) {
-  const data = await prisma.note.findMany({
-    where: { userId: userId },
-    orderBy: {
-      createdAt: "desc",
+  noStore();
+  const data = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      Notes: true,
+      Subscription: {
+        select: {
+          status: true,
+        },
+      },
     },
   });
 
@@ -27,7 +35,7 @@ export default async function Dashboard() {
   const data = await getNotes(user?.id as string);
 
   async function deleteData(formData: FormData) {
-    'use server'
+    "use server";
     const id = formData.get("id") as string;
     await prisma.note.delete({
       where: {
@@ -47,14 +55,43 @@ export default async function Dashboard() {
             Here you can see and create new notes
           </p>
         </div>
-        <Button asChild>
-          <Link href={"/dashboard/new"}>Create a new note</Link>
-        </Button>
+        {data?.Subscription?.status === "active" ? (
+          <Button asChild>
+            <Link href={"/dashboard/new"}>Create a new note</Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link href={"/dashboard/billing"}>Create a new note</Link>
+          </Button>
+        )}
       </div>
 
-      {data.length > 0 ? (
+      {data?.Notes.length == 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[400px] rounded-md border border-dashed text-center animate-in fade-in-50">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+            <File className="h-10 w-10 text-primary" />
+          </div>
+
+          <h3 className="mt-6 text-xl font-semibold">
+            You don't have nay notes created
+          </h3>
+          <p className="text-sm mb-8 mt-2 text-center leading-6 text-muted-foreground max-w-sm mx-auto">
+            You currently don't have any notes. Please create some so that you
+            can see them right here.
+          </p>
+          {data?.Subscription?.status === "active" ? (
+            <Button asChild>
+              <Link href={"/dashboard/new"}>Create a new note</Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link href={"/dashboard/billing"}>Create a new note</Link>
+            </Button>
+          )}
+        </div>
+      ) : (
         <div className="flex flex-col gap-y-4">
-          {data.map((item, index) => (
+          {data?.Notes.map((item, index) => (
             <Card key={index} className="flex items-center justify-between p-4">
               <div>
                 <h2 className="text-xl font-semibold text-primary">
@@ -81,23 +118,6 @@ export default async function Dashboard() {
               </div>
             </Card>
           ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-h-[400px] rounded-md border border-dashed text-center animate-in fade-in-50">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-            <File className="h-10 w-10 text-primary" />
-          </div>
-
-          <h3 className="mt-6 text-xl font-semibold">
-            You don't have nay notes created
-          </h3>
-          <p className="text-sm mb-8 mt-2 text-center leading-6 text-muted-foreground max-w-sm mx-auto">
-            You currently don't have any notes. Please create some so that you
-            can see them right here.
-          </p>
-          <Button asChild>
-            <Link href={"/dashboard/new"}>Create a new note</Link>
-          </Button>
         </div>
       )}
     </div>

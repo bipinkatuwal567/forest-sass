@@ -1,5 +1,4 @@
 import { StripePortal, StripeSubscriptionButton } from "@/components/SubmitButton";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/db";
 import { getStripeSession, stripe } from "@/lib/stripe";
@@ -7,6 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { CheckCircle2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
+import { unstable_noStore as noStore } from "next/cache";
 
 const featuredItems = [
   { name: "Lorem ipsum dolor sit amet." },
@@ -17,6 +17,7 @@ const featuredItems = [
 ];
 
 export async function getData(userId: string) {
+  noStore();
   const data = await prisma.subscription.findUnique({
     where: { userId },
     select: {

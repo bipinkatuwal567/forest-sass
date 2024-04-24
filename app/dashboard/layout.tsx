@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ async function getData({
   lastName: string | undefined | null;
   profileImage: string | undefined | null;
 }) {
+  noStore();
   const user = await prisma.user.findUnique({
     where: { id },
     select: {
@@ -40,17 +42,17 @@ async function getData({
     });
   }
 
-  if(!user?.stripeCustomerId){
+  if (!user?.stripeCustomerId) {
     const data = await stripe.customers.create({
       email,
-    })
+    });
 
     await prisma.user.update({
-      where: {id},
+      where: { id },
       data: {
         stripeCustomerId: data.id,
-      }
-    })
+      },
+    });
   }
 }
 
