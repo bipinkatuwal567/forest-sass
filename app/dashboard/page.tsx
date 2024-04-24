@@ -73,10 +73,10 @@ export default async function Dashboard() {
           </div>
 
           <h3 className="mt-6 text-xl font-semibold">
-            You don't have nay notes created
+            You don&apos;t have nay notes created
           </h3>
           <p className="text-sm mb-8 mt-2 text-center leading-6 text-muted-foreground max-w-sm mx-auto">
-            You currently don't have any notes. Please create some so that you
+            You currently don&apos;t have any notes. Please create some so that you
             can see them right here.
           </p>
           {data?.Subscription?.status === "active" ? (

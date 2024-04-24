@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { XCircleIcon, XIcon } from "lucide-react";
+import { XCircleIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -16,13 +16,13 @@ const CancelledPage = () => {
           <div className="text-center mt-3 sm:mt-5 w-full">
             <h3 className="text-lg leading-6 font-medium">Payment Failed</h3>
             <p className="mt-2 text-muted-foreground text-sm">
-              No worries, you won't be charged. Please try again.
+              No worries, you won&apos;t be charged. Please try again.
             </p>
           </div>
 
           <div className="mt-5 sm:mt-6 w-full">
             <Button className="w-full" asChild>
-                <Link href={"/"}>Go back to dashboard</Link>
+              <Link href={"/"}>Go back to dashboard</Link>
             </Button>
           </div>
         </div>
