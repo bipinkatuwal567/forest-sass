@@ -18,8 +18,8 @@ import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 
 async function postData(formData: FormData) {
-  noStore();
   "use server";
+  noStore();
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 

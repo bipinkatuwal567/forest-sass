@@ -1,11 +1,20 @@
-import { StripePortal, StripeSubscriptionButton } from "@/components/SubmitButton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  StripePortal,
+  StripeSubscriptionButton,
+} from "@/components/SubmitButton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import prisma from "@/lib/db";
 import { getStripeSession, stripe } from "@/lib/stripe";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { CheckCircle2 } from "lucide-react";
 import { redirect } from "next/navigation";
-import React from "react";
+import React, { useId } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 
 const featuredItems = [
@@ -16,10 +25,12 @@ const featuredItems = [
   { name: "Lorem ipsum dolor sit amet." },
 ];
 
-export async function getData(userId: string) {
+async function getData(userId: string) {
   noStore();
   const data = await prisma.subscription.findUnique({
-    where: { userId },
+    where: {
+      userId: userId,
+    },
     select: {
       status: true,
       user: {
@@ -33,17 +44,46 @@ export async function getData(userId: string) {
   return data;
 }
 
-const page = async () => {
+const BillingPage = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   const data = await getData(user?.id as string);
 
-  async function createCustomerPortal(){
+  async function createSubscription() {
+    "use server";
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user?.id },
+      select: {
+        stripeCustomerId: true,
+      },
+    });
+
+    if (!dbUser?.stripeCustomerId) {
+      throw new Error("Unable to get customer id");
+    }
+
+    const subscriptionURL = await getStripeSession({
+      customerId: dbUser.stripeCustomerId,
+      domainUrl:
+        process.env.NODE_ENV == "production"
+          ? (process.env.PRODUCTION_URL as string)
+          : "http://localhost:3000",
+      priceId: process.env.STRIPE_PRICE_ID as string,
+    });
+
+    return redirect(subscriptionURL);
+  }
+
+  async function createCustomerPortal() {
     "use server";
     const session = await stripe.billingPortal.sessions.create({
       customer: data?.user?.stripeCustomerId as string,
-      return_url: "http://localhost:3000/dashboard",
-    })
+      return_url:
+        process.env.NODE_ENV == "production"
+          ? (process.env.PRODUCTION_URL as string)
+          : "http://localhost:3000/dashboard",
+    });
 
     return redirect(session?.url);
   }
@@ -63,40 +103,21 @@ const page = async () => {
         <Card className="w-full md:w-2/3">
           <CardHeader>
             <CardTitle>Edit Subscription</CardTitle>
-            <CardDescription>Click on the button below, this will give you the opportunity to change your payment details and view your statement at the same time.</CardDescription>
+            <CardDescription>
+              Click on the button below, this will give you the opportunity to
+              change your payment details and view your statement at the same
+              time.
+            </CardDescription>
           </CardHeader>
 
           <CardContent>
             <form action={createCustomerPortal}>
-            <StripePortal />
+              <StripePortal />
             </form>
           </CardContent>
         </Card>
       </div>
     );
-  }
-
-  async function createSubscription() {
-    "use server";
-
-    const dbUser = await prisma.user.findUnique({
-      where: { id: user?.id },
-      select: {
-        stripeCustomerId: true,
-      },
-    });
-
-    if (!dbUser?.stripeCustomerId) {
-      throw new Error("Unable to get customer id");
-    }
-
-    const subscriptionURL = await getStripeSession({
-      customerId: dbUser.stripeCustomerId,
-      domainUrl: "http://localhost:3000",
-      priceId: process.env.STRIPE_PRICE_ID as string,
-    });
-
-    return redirect(subscriptionURL);
   }
 
   return (
@@ -137,4 +158,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default BillingPage;
