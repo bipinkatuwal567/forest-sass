@@ -48,7 +48,7 @@ export default async function Dashboard() {
 
   return (
     <div className="grid items-start gap-y-8">
-      <div className="flex items-center justify-between px-2">
+      <div className="flex flex-col sm:flex-row items-center justify-between px-2">
         <div className="grid gap-1">
           <h3 className="text-3xl md:text-4xl">Your Notes</h3>
           <p className="text-lg text-muted-foreground">
@@ -76,8 +76,8 @@ export default async function Dashboard() {
             You don&apos;t have nay notes created
           </h3>
           <p className="text-sm mb-8 mt-2 text-center leading-6 text-muted-foreground max-w-sm mx-auto">
-            You currently don&apos;t have any notes. Please create some so that you
-            can see them right here.
+            You currently don&apos;t have any notes. Please create some so that
+            you can see them right here.
           </p>
           {data?.Subscription?.status === "active" ? (
             <Button asChild>

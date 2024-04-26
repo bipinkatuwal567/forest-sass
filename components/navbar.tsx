@@ -16,12 +16,12 @@ const Navbar = async () => {
     <nav className=" w-full flex items-center h-[10vh] bg-background border-b">
       <div className="container flex justify-between items-center">
         <Link href={"/"}>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-xl sm:text-3xl font-bold">
             Forest <span className="text-primary">Sass</span>
           </h1>
         </Link>
 
-        <div className="flex items-center gap-x-5">
+        <div className="flex items-center gap-x-2 sm:gap-x-5">
           <ThemeToggler />
           {(await isAuthenticated()) ? (
             <UserNav user={user} />

@@ -24,7 +24,7 @@ export default async function Home() {
             <h1 className="mt-8 text-3xl font-extrabold lg:text-6xl tracking-tight">
               Create notes with ease
             </h1>
-            <p className="mt-8 max-w-xl mx-auto text-primary-foreground text-base lg:text-xl">
+            <p className="mt-8 max-w-xl mx-auto text-muted-foreground text-base lg:text-xl">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio
               dolores consequatur ipsum.
             </p>
